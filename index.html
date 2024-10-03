@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Desenhe Retângulos e Adicione Texto na Imagem</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Desenhe Retângulos e Adicione Texto na Imagem</h1>
+        <input type="file" id="imageUpload" accept="image/*" />
+        <br />
+        <label>
+            Escolha a cor:
+            <input type="color" id="colorPicker" value="#FF0000" />
+        </label>
+        <br />
+        <button id="drawRectangle">Desenhar Retângulo</button>
+        <button id="addText">Adicionar Texto</button>
+
+        <canvas id="canvas" style="border: 1px solid black; margin-top: 20px; cursor: crosshair;"></canvas>
+
+        <div id="textInputContainer" style="display: none; position: absolute;">
+            <input type="text" id="textInput" />
+            <button id="insertText">Inserir</button>
+        </div>
+
+        <button id="downloadBtn" style="display: none;">Baixar Imagem</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
