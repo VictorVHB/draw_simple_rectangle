@@ -79,13 +79,18 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 // Finaliza o desenho do retângulo
-canvas.addEventListener('mouseup', () => {
+canvas.addEventListener('mouseup', (e) => {
     if (isDrawing) {
-        const rectWidth = canvas.width - startX; // Largura do retângulo
-        const rectHeight = canvas.height - startY; // Altura do retângulo
+        const rect = canvas.getBoundingClientRect();
+        const endX = e.clientX - rect.left;
+        const endY = e.clientY - rect.top;
+
+        const rectWidth = endX - startX; // Corrigido: Cálculo correto da largura
+        const rectHeight = endY - startY; // Corrigido: Cálculo correto da altura
 
         rectangles.push({ startX, startY, width: rectWidth, height: rectHeight, color: selectedColor });
         isDrawing = false;
+        redraw(); // Redesenha após adicionar o retângulo
     }
 });
 
