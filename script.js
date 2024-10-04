@@ -25,8 +25,9 @@ document.getElementById('imageUpload').addEventListener('change', (e) => {
             canvas.height = img.height;
             ctx.drawImage(img, 0, 0);
 
-            // Exibe o botão de download quando a imagem é carregada
+            // Exibe o botão de download e garante que ele esteja visível
             downloadBtn.style.display = 'block';
+            downloadBtn.style.marginTop = '20px'; // Garantir margem
         };
     };
     reader.readAsDataURL(file);

@@ -6,3 +6,26 @@ body {
 .container {
     position: relative;
 }
+
+#downloadBtn {
+    display: none;
+    margin-top: 20px; /* Define uma margem superior */
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50; /* Cor de fundo */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#downloadBtn:hover {
+    background-color: #45a049; /* Cor ao passar o mouse */
+}
+
+canvas {
+    display: block;
+    margin: 20px auto; /* Centraliza o canvas e o distancia dos outros elementos */
+    max-width: 100%; /* Limita a largura do canvas para não ultrapassar a tela */
+    height: auto; /* Mantém a proporção correta */
+}
