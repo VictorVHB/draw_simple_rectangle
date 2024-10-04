@@ -7,10 +7,13 @@ const rectangles = [];
 const texts = [];
 let selectedColor = "#FF0000";
 let isTextMode = false;
-let currentText = "";
 const textInputContainer = document.getElementById('textInputContainer');
 const textInput = document.getElementById('textInput');
 const downloadBtn = document.getElementById('downloadBtn');
+
+// Definir dimensões máximas do canvas
+const maxWidth = 800;
+const maxHeight = 600;
 
 // Função para carregar a imagem
 document.getElementById('imageUpload').addEventListener('change', (e) => {
@@ -20,14 +23,30 @@ document.getElementById('imageUpload').addEventListener('change', (e) => {
         const img = new Image();
         img.src = event.target.result;
         img.onload = () => {
-            image = img;
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
+            let imgWidth = img.width;
+            let imgHeight = img.height;
 
-            // Exibe o botão de download e garante que ele esteja visível
+            // Redimensiona a imagem se for maior que os valores máximos
+            if (imgWidth > maxWidth || imgHeight > maxHeight) {
+                const aspectRatio = imgWidth / imgHeight;
+
+                if (imgWidth > imgHeight) {
+                    imgWidth = maxWidth;
+                    imgHeight = maxWidth / aspectRatio;
+                } else {
+                    imgHeight = maxHeight;
+                    imgWidth = maxHeight * aspectRatio;
+                }
+            }
+
+            image = img;
+            canvas.width = imgWidth;
+            canvas.height = imgHeight;
+            ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+
+            // Exibe o botão de download
             downloadBtn.style.display = 'block';
-            downloadBtn.style.marginTop = '20px'; // Garantir margem
+            downloadBtn.style.marginTop = '20px'; // Garante margem
         };
     };
     reader.readAsDataURL(file);
@@ -42,11 +61,11 @@ canvas.addEventListener('mousedown', (e) => {
     if (isTextMode) {
         // Mostra o campo de entrada de texto na posição do clique
         textInputContainer.style.display = 'block';
-        textInputContainer.style.left = `${e.pageX}px`;  // Usa `pageX` para evitar posicionamento incorreto
-        textInputContainer.style.top = `${e.pageY}px`;   // Usa `pageY` para garantir que o campo apareça onde clicado
-        textInput.focus(); // Coloca o foco no campo de texto
+        textInputContainer.style.left = `${e.pageX}px`;
+        textInputContainer.style.top = `${e.pageY}px`;
+        textInput.focus(); // Foco no campo de texto
 
-        // Salva a posição do clique para adicionar o texto mais tarde
+        // Salva a posição do clique
         startX = x;
         startY = y;
     } else {
@@ -58,18 +77,17 @@ canvas.addEventListener('mousedown', (e) => {
 
 // Função para inserir o texto na imagem
 document.getElementById('insertText').addEventListener('click', () => {
-    const currentText = textInput.value.trim(); // Obter texto do input e garantir que não seja vazio
+    const insertedText = textInput.value.trim(); // Novo nome para a variável
 
-    if (currentText) {
+    if (insertedText) {
         texts.push({
-            text: currentText,
+            text: insertedText,
             x: startX,  // Usa as coordenadas do clique
             y: startY,
             color: selectedColor // Usa a cor selecionada
         });
 
         redraw(); // Redesenha a imagem e os elementos
-        currentText = "";
         textInputContainer.style.display = 'none'; // Esconde o campo de entrada de texto
         textInput.value = ''; // Limpa o campo de texto
     }
@@ -83,8 +101,9 @@ canvas.addEventListener('mousemove', (e) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
+    ctx.save();  // Salva o estado atual
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(image, 0, 0);
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     redraw();
 
     ctx.beginPath();
@@ -92,6 +111,8 @@ canvas.addEventListener('mousemove', (e) => {
     ctx.lineWidth = 2;
     ctx.strokeStyle = selectedColor;
     ctx.stroke();
+
+    ctx.restore();  // Restaura o estado anterior
 });
 
 // Finaliza o desenho do retângulo
@@ -101,8 +122,8 @@ canvas.addEventListener('mouseup', (e) => {
         const endX = e.clientX - rect.left;
         const endY = e.clientY - rect.top;
 
-        const rectWidth = endX - startX; // Corrigido: Cálculo correto da largura
-        const rectHeight = endY - startY; // Corrigido: Cálculo correto da altura
+        const rectWidth = endX - startX; // Cálculo correto da largura
+        const rectHeight = endY - startY; // Cálculo correto da altura
 
         rectangles.push({ startX, startY, width: rectWidth, height: rectHeight, color: selectedColor });
         isDrawing = false;
@@ -113,7 +134,7 @@ canvas.addEventListener('mouseup', (e) => {
 // Redesenha a imagem e todos os elementos
 function redraw() {
     // Desenha a imagem de fundo
-    ctx.drawImage(image, 0, 0);
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
     // Desenha todos os retângulos
     rectangles.forEach(rect => {
