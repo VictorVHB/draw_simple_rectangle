@@ -24,6 +24,9 @@ document.getElementById('imageUpload').addEventListener('change', (e) => {
             canvas.width = img.width;
             canvas.height = img.height;
             ctx.drawImage(img, 0, 0);
+
+            // Exibe o botão de download quando a imagem é carregada
+            downloadBtn.style.display = 'block';
         };
     };
     reader.readAsDataURL(file);
