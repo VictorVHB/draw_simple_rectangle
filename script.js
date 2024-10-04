@@ -40,10 +40,15 @@ canvas.addEventListener('mousedown', (e) => {
     const y = e.clientY - rect.top;
 
     if (isTextMode) {
+        // Mostra o campo de entrada de texto na posição do clique
         textInputContainer.style.display = 'block';
-        textInputContainer.style.left = `${x}px`;
-        textInputContainer.style.top = `${y}px`;
-        textInput.focus();
+        textInputContainer.style.left = `${e.pageX}px`;  // Usa `pageX` para evitar posicionamento incorreto
+        textInputContainer.style.top = `${e.pageY}px`;   // Usa `pageY` para garantir que o campo apareça onde clicado
+        textInput.focus(); // Coloca o foco no campo de texto
+
+        // Salva a posição do clique para adicionar o texto mais tarde
+        startX = x;
+        startY = y;
     } else {
         startX = x;
         startY = y;
@@ -53,13 +58,20 @@ canvas.addEventListener('mousedown', (e) => {
 
 // Função para inserir o texto na imagem
 document.getElementById('insertText').addEventListener('click', () => {
-    if (currentText) {
-        texts.push({ text: currentText, x: parseInt(textInputContainer.style.left), y: parseInt(textInputContainer.style.top), color: selectedColor });
+    const currentText = textInput.value.trim(); // Obter texto do input e garantir que não seja vazio
 
-        redraw();
+    if (currentText) {
+        texts.push({
+            text: currentText,
+            x: startX,  // Usa as coordenadas do clique
+            y: startY,
+            color: selectedColor // Usa a cor selecionada
+        });
+
+        redraw(); // Redesenha a imagem e os elementos
         currentText = "";
-        textInputContainer.style.display = 'none';
-        textInput.value = '';
+        textInputContainer.style.display = 'none'; // Esconde o campo de entrada de texto
+        textInput.value = ''; // Limpa o campo de texto
     }
 });
 
@@ -100,8 +112,10 @@ canvas.addEventListener('mouseup', (e) => {
 
 // Redesenha a imagem e todos os elementos
 function redraw() {
+    // Desenha a imagem de fundo
     ctx.drawImage(image, 0, 0);
 
+    // Desenha todos os retângulos
     rectangles.forEach(rect => {
         ctx.beginPath();
         ctx.rect(rect.startX, rect.startY, rect.width, rect.height);
@@ -110,10 +124,11 @@ function redraw() {
         ctx.stroke();
     });
 
+    // Desenha todos os textos
     texts.forEach(txt => {
         ctx.font = "20px Arial";
         ctx.fillStyle = txt.color;
-        ctx.fillText(txt.text, txt.x, txt.y);
+        ctx.fillText(txt.text, txt.x, txt.y);  // Usa as coordenadas salvas
     });
 }
 
